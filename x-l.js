@@ -73,8 +73,8 @@ function start() {
   }
   const header = makeDom(document.body, "header", "MegaSoft X-L");
 
-  window.addEventListener("online", handleNetworkChange(header));
-  window.addEventListener("offline", handleNetworkChange(header));
+  window.addEventListener("online", () => handleNetworkChange(header));
+  window.addEventListener("offline", () => handleNetworkChange(header));
 
   const main = makeDom(document.body, "main");
 
@@ -87,7 +87,7 @@ function start() {
     location.reload();
   };
 
-  const columnButton = makeDom(buttonsDiv, "button", "Add column");
+  const columnButton = makeDom(buttonsDiv, "button", "Add` column");
   columnButton.onclick = () => {
     makeColumn(tbody, prompt("What do you want to name the column?"));
   };
