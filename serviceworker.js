@@ -8,7 +8,7 @@ self.addEventListener("install", (event) => {
       .open(cacheName)
       .then((cache) => {
         console.log("caching files");
-        cache.addAll(["index.html", "x-l.js", "x-l.css", "manifest.json", "favicon.ico"]);
+        cache.addAll(["index.html", "x-l.js", "x-l.css", "manifest.json", "favicon.ico", "/images/today.png"]);
       })
       .then(() => self.skipWaiting())
   );
