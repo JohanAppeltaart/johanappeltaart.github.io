@@ -2,7 +2,8 @@ import { test, expect } from '@playwright/test';
 import * as path from 'path';
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("file://" + path.join(__dirname, '../index.html'))
+  await page.goto("file://" + path.join(__dirname, '../index.html'));
+  await page.evaluate(() => localStorage.clear());
 });
 
 test('has header', async ({ page }) => {
@@ -89,4 +90,35 @@ test('remove row', async ({ page }) => {
   const previousCount = await page.locator('tbody > tr').count()
   await page.locator('tbody > tr:nth-child(1) > td:nth-child(1)').click()
   await expect(page.locator('tbody > tr')).toHaveCount(previousCount-1)
+})
+
+test('page same on reload', async ({ page }) => {
+
+  page.once('dialog', dialog => dialog.accept("Age"))
+  await page.getByRole('button', { name: 'Add column' }).click();
+
+  page.once('dialog', dialog => dialog.accept("City"))
+  await page.getByRole('button', { name: 'Add column' }).click();
+
+  await page.locator('tbody > tr:nth-child(1) > td:nth-child(2)').click();
+  await page.getByRole('textbox').fill('Peter');
+  await page.locator('tbody > tr:nth-child(1) > td:nth-child(3)').click();
+  await page.getByRole('textbox').fill('42');
+  await page.locator('tbody > tr:nth-child(1) > td:nth-child(4)').click();
+  await page.getByRole('textbox').fill('Enschede');
+
+  await page.getByRole('button', { name: 'Add row' }).click();
+  await page.locator('tbody > tr:nth-child(2) > td:nth-child(2)').click();
+  await page.getByRole('textbox').fill('Tibor');
+  await page.locator('tbody > tr:nth-child(2) > td:nth-child(3)').click();
+  await page.getByRole('textbox').fill('38');
+  await page.locator('tbody > tr:nth-child(2) > td:nth-child(4)').click();
+  await page.getByRole('textbox').fill('Sweden');
+  await page.getByRole('textbox').press('Enter');
+
+  
+  await expect(page.getByRole('table')).toContainText('AgeCity✗Peter42Enschede✗Tibor38Sweden');
+
+  await page.reload()
+  await expect(page.getByRole('table')).toContainText('AgeCity✗Peter42Enschede✗Tibor38Sweden');
 })
